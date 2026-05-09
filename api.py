@@ -142,6 +142,7 @@ class Crud(Resource):
         data = request.get_json() or {}
         tarea = (data.get("tarea") or "").strip()
         prioridad = (data.get("prioridad") or "").strip()
+        descripcion = (data.get("descripcion") or "").strip()
 
         if not tarea or not prioridad:
             return {"message": "Faltan datos: tarea o prioridad."}, 400
@@ -159,8 +160,9 @@ class Crud(Resource):
         tareas[tarea_id] = {
             "tarea": tarea,
             "creador": current_user["username"],
-            "prioridad": prioridad
-        }
+            "prioridad": prioridad,
+            "descripcion": descripcion
+        } 
         guardar_tareas(tareas)
         return {"message": f"Tarea {tarea} registrada."}, 201
 
@@ -170,6 +172,7 @@ class Crud(Resource):
         data = request.get_json() or {}
         tarea = (data.get("tarea") or "").strip()
         nuevo = (data.get("nuevo") or "").strip()
+        nueva_descripcion = (data.get("nueva_descripcion") or "").strip()
 
         if not tarea or not nuevo:
             return {"message": "Completá la tarea actual y el nuevo nombre."}, 400
@@ -186,10 +189,14 @@ class Crud(Resource):
         tarea_duplicada_id, tarea_duplicada = buscar_tarea_por_nombre(tareas, nuevo)
         if tarea_duplicada and tarea_duplicada_id != tarea_id:
             return {"message": "Ya existe una tarea con ese nombre."}, 400
+        
+        if nueva_descripcion:
+            tarea_encontrada["descripcion"] = nueva_descripcion
 
         tarea_encontrada["tarea"] = nuevo
         guardar_tareas(tareas)
         return {"message": f"Tarea {tarea} modificada."}, 200
+
 
     @jwt_required()
     def delete(self):

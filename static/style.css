@@ -92,24 +92,6 @@ a {
     overflow: hidden;
 }
 
-.site-shell::before,
-.site-shell::after {
-    content: "";
-    position: absolute;
-    border-radius: 999px;
-    pointer-events: none;
-    filter: blur(16px);
-}
-
-.site-shell::before {
-    top: 40px;
-    right: -110px;
-    width: 320px;
-    height: 320px;
-    background: rgba(15, 98, 254, 0.14);
-    animation: floatBlob 12s ease-in-out infinite;
-}
-
 .site-shell::after {
     bottom: 30px;
     left: -90px;
@@ -264,7 +246,6 @@ a {
 
 .metric span,
 .stat-card span,
-.eyebrow,
 .pill,
 .toast-title {
     font-size: 0.8rem;

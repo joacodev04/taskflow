@@ -27,11 +27,8 @@
         <main class="dashboard">
             <header class="dashboard-header">
                 <div class="section-head">
-                    <span class="eyebrow">Panel administrador</span>
-                    <h1>Gestiona tareas sin friccion.</h1>
-                    <p>Alta, edicion y eliminacion con el mismo diseño visual, ahora apoyado en Bootstrap.</p>
+                    <h1>Gestion de tareas.</h1>
                 </div>
-
                 <div class="toolbar">
                     <button id="refresh_tasks" class="btn btn-secondary" type="button">Actualizar</button>
                     <button id="logout_button" class="btn btn-primary" type="button">Cerrar sesion</button>
@@ -39,31 +36,37 @@
             </header>
 
             <section class="row g-3">
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <article class="stat-card h-100">
-                        <span>Total de tareas</span>
-                        <strong id="metric_total">0</strong>
-                    </article>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <article class="stat-card h-100">
-                        <span>Urgentes</span>
-                        <strong id="metric_urgent">0</strong>
-                    </article>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <article class="stat-card h-100">
-                        <span>Creadores activos</span>
-                        <strong id="metric_creators">0</strong>
-                    </article>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <article class="stat-card h-100">
-                        <span>Ultima actualizacion</span>
-                        <strong id="metric_updated">-</strong>
-                    </article>
-                </div>
-            </section>
+    <div class="col-12 col-sm-6 col-xl">
+        <article class="stat-card h-100">
+            <span>Total de tareas</span>
+            <strong id="metric_total">0</strong>
+        </article>
+    </div>
+    <div class="col-12 col-sm-6 col-xl">
+        <article class="stat-card h-100">
+            <span>Urgentes</span>
+            <strong id="metric_urgent">0</strong>
+        </article>
+    </div>
+    <div class="col-12 col-sm-6 col-xl">
+        <article class="stat-card h-100">
+            <span>Importantes</span>
+            <strong id="metric_important">0</strong>
+        </article>
+    </div>
+    <div class="col-12 col-sm-6 col-xl">
+        <article class="stat-card h-100">
+            <span>Deseables</span>
+            <strong id="metric_deseable">0</strong>
+        </article>
+    </div>
+    <div class="col-12 col-sm-6 col-xl">
+        <article class="stat-card h-100">
+            <span>Ultima actualizacion</span>
+            <strong id="metric_updated">-</strong>
+        </article>
+    </div>
+</section>
 
             <div id="mensaje" class="message-box"></div>
 
@@ -75,7 +78,11 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="tarea">Tarea</label>
-                                <input id="tarea" class="form-control" type="text" placeholder="Ej. Revisar entregas del sprint">
+                                <input id="tarea" class="form-control" type="text" placeholder="Ej. Programacion">
+                            </div>
+                            <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                                <input id="descripcion" class="form-control" type="text" placeholder="Ej. Estudiar">
                             </div>
                             <div class="form-group">
                                 <label for="prioridad">Prioridad</label>
@@ -100,6 +107,10 @@
                                 <div class="form-group">
                                     <label for="tarea_actual">Tarea actual</label>
                                     <input id="tarea_actual" class="form-control" type="text" placeholder="Selecciona desde la tabla o escribe el nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nueva_descripcion">Nueva descripción</label>
+                                    <input id="nueva_descripcion" class="form-control" type="text" placeholder="Define la nueva descripción">
                                 </div>
                                 <div class="form-group">
                                     <label for="nuevo">Nuevo nombre</label>
