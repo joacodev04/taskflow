@@ -189,9 +189,11 @@ function renderizarTabla(datos) {
         const fila = document.createElement("tr");
 
         const celdaId = document.createElement("td");
+        celdaId.dataset.label = "ID";
         celdaId.textContent = id;
 
         const celdaTarea = document.createElement("td");
+        celdaTarea.dataset.label = "Tarea";
         const titulo = document.createElement("div");
         titulo.className = "task-title";
         titulo.textContent = nombreTarea;
@@ -201,15 +203,18 @@ function renderizarTabla(datos) {
         celdaTarea.append(titulo, meta);
 
         const celdaPrioridad = document.createElement("td");
+        celdaPrioridad.dataset.label = "Prioridad";
         const badge = document.createElement("span");
         badge.className = `priority-label priority-${prioridadClase}`;
         badge.textContent = prioridad;
         celdaPrioridad.appendChild(badge);
 
         const celdaCreador = document.createElement("td");
+        celdaCreador.dataset.label = "Creador";
         celdaCreador.textContent = creador;
 
         const celdaAcciones = document.createElement("td");
+        celdaAcciones.dataset.label = "Acciones";
         const acciones = document.createElement("div");
         acciones.className = "table-actions";
 

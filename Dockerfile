@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "api.py"]
+CMD ["gunicorn", "api:app"]
