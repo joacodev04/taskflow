@@ -1,4 +1,4 @@
-$projectRoot = $PSScriptRoot
+$projectRoot = Split-Path $PSScriptRoot -Parent
 $venvPython = Join-Path $projectRoot ".venv\Scripts\python.exe"
 $bundledPython = "C:\Users\joaqu\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
 $apiFile = Join-Path $projectRoot "api.py"
