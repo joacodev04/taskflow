@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskflow | Panel Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="site-shell container-xxl py-4 py-lg-5">
+        <div id="toast_container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+        <div id="delete_modal" class="confirm-modal" hidden aria-hidden="true">
+            <div class="confirm-modal-card" role="dialog" aria-modal="true" aria-labelledby="delete_modal_title">
+                <span class="eyebrow">Confirmacion</span>
+                <h3 id="delete_modal_title">Eliminar tarea</h3>
+                <p class="confirm-modal-text">
+                    Vas a eliminar <strong id="delete_task_name">esta tarea</strong>. Esta accion no se puede deshacer.
+                </p>
+                <div class="confirm-modal-actions">
+                    <button id="cancel_delete" class="btn btn-secondary" type="button">Cancelar</button>
+                    <button id="confirm_delete" class="btn btn-danger" type="button">Eliminar</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="dashboard">
+            <header class="dashboard-header">
+                <div class="section-head">
+                    <span class="eyebrow">Panel administrador</span>
+                    <h1>Gestiona tareas sin friccion.</h1>
+                    <p>Alta, edicion y eliminacion con el mismo diseño visual, ahora apoyado en Bootstrap.</p>
+                </div>
+
+                <div class="toolbar">
+                    <button id="refresh_tasks" class="btn btn-secondary" type="button">Actualizar</button>
+                    <button id="logout_button" class="btn btn-primary" type="button">Cerrar sesion</button>
+                </div>
+            </header>
+
+            <section class="row g-3">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="stat-card h-100">
+                        <span>Total de tareas</span>
+                        <strong id="metric_total">0</strong>
+                    </article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="stat-card h-100">
+                        <span>Urgentes</span>
+                        <strong id="metric_urgent">0</strong>
+                    </article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="stat-card h-100">
+                        <span>Creadores activos</span>
+                        <strong id="metric_creators">0</strong>
+                    </article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="stat-card h-100">
+                        <span>Ultima actualizacion</span>
+                        <strong id="metric_updated">-</strong>
+                    </article>
+                </div>
+            </section>
+
+            <div id="mensaje" class="message-box"></div>
+
+            <section class="row g-4">
+                <div class="col-lg-7">
+                    <article class="card h-100">
+                        <span class="eyebrow">Nueva tarea</span>
+                        <h3>Agregar al tablero</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tarea">Tarea</label>
+                                <input id="tarea" class="form-control" type="text" placeholder="Ej. Revisar entregas del sprint">
+                            </div>
+                            <div class="form-group">
+                                <label for="prioridad">Prioridad</label>
+                                <select id="prioridad" class="form-select">
+                                    <option value="">Selecciona una prioridad</option>
+                                    <option value="Urgente">Urgente</option>
+                                    <option value="Importante">Importante</option>
+                                    <option value="Deseable">Deseable</option>
+                                </select>
+                            </div>
+                            <button id="agregar" class="btn btn-primary w-100" type="button">Guardar tarea</button>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="stack">
+                        <article class="card">
+                            <span class="eyebrow">Edicion rapida</span>
+                            <h3>Modificar o eliminar</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="tarea_actual">Tarea actual</label>
+                                    <input id="tarea_actual" class="form-control" type="text" placeholder="Selecciona desde la tabla o escribe el nombre">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nuevo">Nuevo nombre</label>
+                                    <input id="nuevo" class="form-control" type="text" placeholder="Define el nuevo nombre">
+                                </div>
+                                <div class="inline-actions d-grid d-md-flex">
+                                    <button id="modificar" class="btn btn-success flex-md-fill" type="button">Modificar</button>
+                                    <button id="eliminar" class="btn btn-danger flex-md-fill" type="button">Eliminar</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="subtle-card">
+                            <p class="footer-text">Tip: puedes cargar una tarea desde la tabla con Editar y luego cambiarle el nombre desde este panel.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="welcome-block">
+                    <div class="welcome-title">
+                        <span class="eyebrow">Tareas actuales</span>
+                        <h2>Vista general del tablero</h2>
+                    </div>
+                    <span id="table_status" class="pill">Esperando carga</span>
+                </div>
+
+                <div id="admin_task_list" class="table-shell">
+                    <div class="task-list-empty">Cargando tareas...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

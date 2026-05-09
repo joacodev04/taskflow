@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskflow | Acceso</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="site-shell container-xxl py-4 py-lg-5">
+        <main class="auth-layout">
+            <div class="row g-4 align-items-stretch">
+                <section class="col-lg-8">
+                    <div class="hero-panel h-100">
+                        <div class="hero-copy">
+                            <span class="eyebrow">Taskflow Control</span>
+                            <h1>Ordena tu trabajo con una interfaz clara y actual.</h1>
+                            <p>
+                                Accede al panel para crear, priorizar y revisar tareas sin una UI rota ni pantallas inconsistentes.
+                            </p>
+                            <div class="hero-actions">
+                                <span class="pill">Flujo mas simple</span>
+                                <span class="pill">Diseno responsive</span>
+                                <span class="pill">Base Bootstrap</span>
+                            </div>
+                        </div>
+
+                        <div class="hero-stats">
+                            <div class="metric">
+                                <span>Vista</span>
+                                <strong>Mas limpia</strong>
+                            </div>
+                            <div class="metric">
+                                <span>Acciones</span>
+                                <strong>Mas rapidas</strong>
+                            </div>
+                            <div class="metric">
+                                <span>Base</span>
+                                <strong>Bootstrap</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="col-lg-4">
+                    <div class="auth-card h-100">
+                        <div class="brand-mark">TF</div>
+                        <h2>Iniciar sesion</h2>
+                        <p>Entra con tu usuario para abrir el panel principal.</p>
+
+                        <form id="formulario_login" class="form-grid">
+                            <div class="form-group">
+                                <label for="username">Usuario</label>
+                                <input id="username" class="form-control" type="text" placeholder="Ingresa tu usuario" required autocomplete="username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Contrasena</label>
+                                <input id="password" class="form-control" type="password" placeholder="Ingresa tu contrasena" required autocomplete="current-password">
+                            </div>
+
+                            <div id="error_login" class="alert alert-danger d-none mb-0" role="alert"></div>
+
+                            <button id="submit_login" class="btn btn-primary btn-block w-100" type="submit">Continuar</button>
+                        </form>
+
+                        <p class="note">La vista mantiene el mismo look del proyecto, ahora montada con utilidades de Bootstrap.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
