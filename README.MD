@@ -34,13 +34,6 @@ usuario1  | 123
 
 ## 🚀 Correr localmente
 
-### Opción 1 — Script automático (Windows)
-
-```bash
-# Cloná el repositorio
-git clone https://github.com/joacodev04/taskflow.git
-cd task-flow
-
 # Ejecutá el script de inicio
 scripts/iniciar.bat
 ```
