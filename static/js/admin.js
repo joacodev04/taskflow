@@ -17,10 +17,12 @@ const elementos = {
     updated: document.querySelector("#metric_updated"),
     tarea: document.querySelector("#tarea"),
     descripcion: document.querySelector("#descripcion"),
+    fechaLimite: document.querySelector("#fecha_limite"),
     prioridad: document.querySelector("#prioridad"),
     tareaActual: document.querySelector("#tarea_actual"),
     nuevo: document.querySelector("#nuevo"),
-    nuevaDescripcion: document.querySelector("#nueva_descripcion")
+    nuevaDescripcion: document.querySelector("#nueva_descripcion"),
+    nuevaFecha: document.querySelector("#nueva_fecha")
 };
  
 let resolverEliminacionPendiente = null;
@@ -124,15 +126,24 @@ function actualizarMetricas(datos) {
 function limpiarFormularios() {
     elementos.tarea.value = "";
     elementos.descripcion.value = "";
+    elementos.fechaLimite.value = "";
     elementos.prioridad.value = "";
     elementos.tareaActual.value = "";
     elementos.nuevo.value = "";
     elementos.nuevaDescripcion.value = "";
+    elementos.nuevaFecha.value = "";
 }
  
-function completarFormularioEdicion(tarea, descripcion) {
+function formatearFecha(fecha) {
+    if (!fecha) return "Sin fecha";
+    const [anio, mes, dia] = fecha.split("-");
+    return `${dia}/${mes}/${anio}`;
+}
+ 
+function completarFormularioEdicion(tarea, descripcion, fecha) {
     elementos.tareaActual.value = tarea;
     elementos.nuevaDescripcion.value = descripcion || "";
+    elementos.nuevaFecha.value = fecha || "";
     elementos.nuevo.focus();
     mostrarMensaje(`Lista para editar: ${tarea}`, "success");
 }
@@ -180,6 +191,7 @@ function renderizarTabla(datos) {
                 <th>ID</th>
                 <th>Tarea</th>
                 <th>Descripcion</th>
+                <th>Fecha limite</th>
                 <th>Prioridad</th>
                 <th>Creador</th>
                 <th>Acciones</th>
@@ -195,6 +207,7 @@ function renderizarTabla(datos) {
         const prioridadClase = prioridad.replace(/\s+/g, "-");
         const nombreTarea = tarea.tarea || "Sin nombre";
         const descripcion = tarea.descripcion || "-";
+        const fecha = tarea.fecha_limite || "";
         const creador = tarea.creador || "Desconocido";
         const fila = document.createElement("tr");
  
@@ -215,6 +228,10 @@ function renderizarTabla(datos) {
         meta.className = "task-meta";
         meta.textContent = descripcion;
         celdaDescripcion.appendChild(meta);
+ 
+        const celdaFecha = document.createElement("td");
+        celdaFecha.dataset.label = "Fecha limite";
+        celdaFecha.textContent = formatearFecha(fecha);
  
         const celdaPrioridad = document.createElement("td");
         celdaPrioridad.dataset.label = "Prioridad";
@@ -238,6 +255,7 @@ function renderizarTabla(datos) {
         botonEditar.dataset.action = "edit";
         botonEditar.dataset.task = nombreTarea;
         botonEditar.dataset.descripcion = descripcion;
+        botonEditar.dataset.fecha = fecha;
         botonEditar.textContent = "Editar";
  
         const botonEliminar = document.createElement("button");
@@ -250,7 +268,7 @@ function renderizarTabla(datos) {
         acciones.append(botonEditar, botonEliminar);
         celdaAcciones.appendChild(acciones);
  
-        fila.append(celdaId, celdaTarea, celdaDescripcion, celdaPrioridad, celdaCreador, celdaAcciones);
+        fila.append(celdaId, celdaTarea, celdaDescripcion, celdaFecha, celdaPrioridad, celdaCreador, celdaAcciones);
         tbody.appendChild(fila);
     });
  
@@ -321,6 +339,7 @@ async function cargarTareas() {
 document.querySelector("#agregar").addEventListener("click", async () => {
     const tarea = elementos.tarea.value.trim();
     const descripcion = elementos.descripcion.value.trim();
+    const fecha_limite = elementos.fechaLimite.value;
     const prioridad = elementos.prioridad.value;
  
     if (!tarea || !prioridad) {
@@ -332,7 +351,7 @@ document.querySelector("#agregar").addEventListener("click", async () => {
         const respuesta = await fetch(`${API_BASE}/crud`, {
             method: "POST",
             headers: obtenerHeaders(),
-            body: JSON.stringify({ tarea, prioridad, descripcion })
+            body: JSON.stringify({ tarea, prioridad, descripcion, fecha_limite })
         });
         const datos = await respuesta.json();
  
@@ -351,6 +370,7 @@ document.querySelector("#modificar").addEventListener("click", async () => {
     const tarea = elementos.tareaActual.value.trim();
     const nuevo = elementos.nuevo.value.trim();
     const nueva_descripcion = elementos.nuevaDescripcion.value.trim();
+    const nueva_fecha = elementos.nuevaFecha.value;
  
     if (!tarea || !nuevo) {
         mostrarMensaje("Completa la tarea actual y el nuevo nombre.", "danger");
@@ -361,7 +381,7 @@ document.querySelector("#modificar").addEventListener("click", async () => {
         const respuesta = await fetch(`${API_BASE}/crud`, {
             method: "PATCH",
             headers: obtenerHeaders(),
-            body: JSON.stringify({ tarea, nuevo, nueva_descripcion })
+            body: JSON.stringify({ tarea, nuevo, nueva_descripcion, nueva_fecha })
         });
         const datos = await respuesta.json();
  
@@ -417,7 +437,7 @@ elementos.lista.addEventListener("click", async evento => {
     }
  
     if (boton.dataset.action === "edit") {
-        completarFormularioEdicion(tarea, boton.dataset.descripcion);
+        completarFormularioEdicion(tarea, boton.dataset.descripcion, boton.dataset.fecha);
         return;
     }
  
