@@ -48,8 +48,7 @@ loginForm.addEventListener("submit", async evento => {
         }
 
         localStorage.setItem("access_token", datos.access_token);
-        localStorage.setItem("user_role", datos.role || "");
-        window.location.href = "/admin.html";
+        window.location.href = "/usuario.html";
     } catch (error) {
         console.error("Error de login:", error);
         mostrarError("No se pudo conectar con el servidor.");
