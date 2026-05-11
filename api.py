@@ -30,6 +30,7 @@ app.config['MYSQL_DB'] = 'Tareas'
 
 mysql = MySQL(app)
 
+
 def verificar_password(password, hashed):
     return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
 
@@ -93,7 +94,10 @@ class CargarObjeto(Resource):
     def get(self):
         current_user = get_jwt_identity()
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, nombreTarea, descripcion, prioridad, fechaLimite FROM tareas WHERE usuario_id = (SELECT id FROM usuario WHERE nombre = %s)", (current_user["username"],))
+        cur.execute(
+            "SELECT id, nombreTarea, descripcion, prioridad, fechaLimite FROM tareas WHERE usuario_id = (SELECT id FROM usuario WHERE nombre = %s)",
+            (current_user["username"],)
+        )
         filas = cur.fetchall()
         cur.close()
         tareas = {}
@@ -208,15 +212,16 @@ def serve_index():
     return send_from_directory(os.path.join(BASE_DIR, "static"), "index.html")
 
 
-@app.route("/usuario.html")
-def serve_usuario():
-    return send_from_directory(os.path.join(BASE_DIR, "static"), "usuario.html")
+@app.route("/admin.html")
+def serve_admin():
+    return send_from_directory(os.path.join(BASE_DIR, "static"), "admin.html")
 
 
 @app.route("/static/<path:filename>")
 def serve_static(filename):
     return send_from_directory(os.path.join(BASE_DIR, "static"), filename)
- 
+
+
 if __name__ == "__main__":
     debug_mode = os.environ.get("FLASK_DEBUG") == "1"
     app.run(debug=debug_mode, host="0.0.0.0", port=5000, use_reloader=debug_mode)
