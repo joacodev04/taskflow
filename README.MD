@@ -25,25 +25,3 @@ Ejecuta:
 ```powershell
 scripts\iniciar.bat
 ```
-
-## Ver las tareas en Workbench
-
-## Estructura
-
-task/
-|-- db/
-|   `-- init.sql
-|-- scripts/
-|   |-- iniciar.bat
-|   `-- iniciar.ps1
-|-- static/
-|   |-- admin.html
-|   |-- index.html
-|   |-- style.css
-|   `-- js/
-|       |-- admin.js
-|       `-- main.js
-|-- api.py
-|-- Dockerfile
-`-- requirements.txt
-```
