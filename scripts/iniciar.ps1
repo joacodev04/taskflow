@@ -6,6 +6,21 @@ $sitePackages = Join-Path $projectRoot ".venv\Lib\site-packages"
 
 Set-Location $projectRoot
 
+$runningApiProcesses = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
+    $_.ProcessId -ne $PID -and
+    $_.CommandLine -and
+    $_.CommandLine.Contains($apiFile)
+}
+
+foreach ($runningProcess in $runningApiProcesses) {
+    try {
+        Stop-Process -Id $runningProcess.ProcessId -Force -ErrorAction Stop
+        Write-Host "Se detuvo una instancia anterior de Taskflow (PID $($runningProcess.ProcessId))." -ForegroundColor Yellow
+    } catch {
+        Write-Host "No se pudo detener la instancia anterior PID $($runningProcess.ProcessId)." -ForegroundColor DarkYellow
+    }
+}
+
 $candidates = @()
 if (Test-Path $venvPython) {
     $candidates += $venvPython

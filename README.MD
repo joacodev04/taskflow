@@ -1,77 +1,95 @@
-# ✅ Task Flow
+# Task Flow
 
-Una aplicación web de gestión de tareas con autenticación de usuarios y panel de administración.
+Aplicacion web simple para gestionar tareas con login y panel de administracion.
 
-## 🌐 Demo en vivo
+## Credenciales de prueba
 
-👉 [Ver la app en Render](https://taskflow-bvr1.onrender.com)
+- Usuario: `usuario1`
+- Contrasena: `123`
 
-> **Nota:** La app está hosteada en el plan gratuito de Render, por lo que puede tardar unos segundos en cargar la primera vez.
+## Tecnologias
 
----
+- Backend: Python + Flask
+- Frontend: HTML, CSS, JavaScript
+- Base de datos: MySQL
+- Contenedor: Docker
 
-## 🔑 Credenciales de prueba
+## Configuracion MySQL
 
-Usuario   | Contraseña
----------------------------
-usuario1  | 123 
+La app usa estas variables de entorno. Si no defines nada, arranca con estos valores:
 
-## ⚙️ Funcionalidades
+- `MYSQL_HOST=localhost`
+- `MYSQL_PORT=3306`
+- `MYSQL_USER=root`
+- `MYSQL_PASSWORD=joaco04`
+- `MYSQL_DB=Tareas`
 
-- ✅ Crear, editar y eliminar tareas
-- 🔐 Login(seguridad)
+La base y las tablas se crean automaticamente al iniciar la app. Si prefieres hacerlo desde Workbench, abre [init.sql](/C:/Users/joaqu/Desktop/Task/db/init.sql).
 
-## 🛠️ Tecnologías
+## Correr localmente
 
-| Capa | Tecnología |
-|------|-----------|
-| Backend | Python |
-| Frontend | HTML, CSS, JavaScript |
-| Contenedor | Docker |
-| Hosting | Render |
+### Opcion 1: script incluido
 
+Ejecuta:
 
-
-## 🚀 Correr localmente
-
-# Ejecutá el script de inicio
-scripts/iniciar.bat
+```powershell
+scripts\iniciar.bat
 ```
 
-### Opción 2 — Docker manual
+### Opcion 2: manual
+
+Instala dependencias y luego ejecuta:
+
+```powershell
+pip install -r requirements.txt
+python api.py
+```
+
+La app queda disponible en [http://localhost:5000](http://localhost:5000).
+
+## Ver las tareas en Workbench
+
+Una vez creada una tarea, puedes consultarla con:
+
+```sql
+USE Tareas;
+
+SELECT
+    t.id,
+    t.nombreTarea,
+    t.descripcion,
+    t.prioridad,
+    t.fechaLimite,
+    u.nombre AS usuario
+FROM tareas t
+JOIN usuario u ON u.id = t.usuario_id
+ORDER BY t.id;
+```
+
+## Docker
 
 ```bash
 docker build -t task-flow .
 docker run -p 5000:5000 task-flow
 ```
 
-Luego abrí tu navegador en `http://localhost:5000`
+## Estructura
 
----
-
-## 📁 Estructura del proyecto
-
-```
+```text
 task/
-├── data/
-│   ├── lista.json       # Almacenamiento de tareas
-│   └── users.json       # Usuarios registrados
-├── static/
-│   ├── js/
-│   │   ├── admin.js     # Lógica del panel admin
-│   │   └── main.js      # Lógica principal
-│   ├── admin.html       # Vista administrador
-│   ├── index.html       # Vista principal
-│   └── style.css        # Estilos
-├── scripts/
-│   └── iniciar.bat      # Script de inicio local
-├── api.py               # API REST (backend)
-├── Dockerfile
-└── requirements.txt
+|-- db/
+|   `-- init.sql
+|-- scripts/
+|   |-- iniciar.bat
+|   `-- iniciar.ps1
+|-- static/
+|   |-- admin.html
+|   |-- index.html
+|   |-- style.css
+|   `-- js/
+|       |-- admin.js
+|       `-- main.js
+|-- api.py
+|-- Dockerfile
+`-- requirements.txt
 ```
-
----
-
-## 👤 Autor
-
-Hecho con ❤️ por Joaquin Murillo (https://github.com/joacodev04)
