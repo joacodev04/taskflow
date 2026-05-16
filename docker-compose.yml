@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_tareas
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Tareas
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app:
+    build: .
+    container_name: app_tareas
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
+      MYSQL_DB: Tareas
+    depends_on:
+      - mysql
