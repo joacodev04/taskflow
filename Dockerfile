@@ -2,9 +2,9 @@ FROM node:20-alpine AS frontend-build
 
 WORKDIR /frontend
 
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml frontend/index.html frontend/vite.config.js ./
+COPY frontend/package.json frontend/index.html frontend/vite.config.js ./
 COPY frontend/src ./src
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN npm install --no-audit --no-fund
 
 RUN node ./node_modules/vite/bin/vite.js build
 
