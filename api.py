@@ -2,24 +2,17 @@ import os
 from contextlib import closing
 from datetime import date, timedelta
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from werkzeug.security import check_password_hash, generate_password_hash
+from database import get_database_target, initialize_database, open_connection, ping_database
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 DEFAULT_USERNAME = os.environ.get("TASKFLOW_DEMO_USERNAME", "usuario1")
 DEFAULT_PASSWORD = os.environ.get("TASKFLOW_DEMO_PASSWORD", "123")
 PRIORIDADES_VALIDAS = {"urgente", "importante", "deseable"}
-MYSQL_CONFIG = {
-    "host": os.environ.get("MYSQL_HOST", "localhost"),
-    "port": int(os.environ.get("MYSQL_PORT", "3306")),
-    "user": os.environ.get("MYSQL_USER", "root"),
-    "passwd": os.environ.get("MYSQL_PASSWORD", "joaco04"),
-    "db": os.environ.get("MYSQL_DB", "Tareas"),
-    "charset": "utf8mb4",
-}
 
 app = Flask(__name__)
 CORS(app)
@@ -32,119 +25,6 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
 app.config["JWT_VERIFY_SUB"] = False
 
 jwt = JWTManager(app)
-
-
-def get_mysql_driver():
-    import_errors = []
-
-    try:
-        import pymysql
-        from pymysql.cursors import DictCursor
-
-        return pymysql, DictCursor
-    except Exception as exc:
-        import_errors.append(f"PyMySQL: {exc}")
-
-    try:
-        import MySQLdb
-        from MySQLdb.cursors import DictCursor
-
-        return MySQLdb, DictCursor
-    except Exception as exc:
-        import_errors.append(f"mysqlclient/MySQLdb: {exc}")
-
-    joined_errors = " | ".join(import_errors) if import_errors else "sin detalles"
-    raise RuntimeError(
-        "No se encontro un driver MySQL compatible. "
-        "Instala PyMySQL (recomendado) o mysqlclient. "
-        f"Detalles: {joined_errors}"
-    )
-
-
-def open_connection(use_database=True):
-    driver, dict_cursor = get_mysql_driver()
-    connection_args = {
-        "host": MYSQL_CONFIG["host"],
-        "port": MYSQL_CONFIG["port"],
-        "user": MYSQL_CONFIG["user"],
-        "passwd": MYSQL_CONFIG["passwd"],
-        "charset": MYSQL_CONFIG["charset"],
-        "cursorclass": dict_cursor,
-    }
-
-    if use_database:
-        connection_args["db"] = MYSQL_CONFIG["db"]
-
-    connection = driver.connect(**connection_args)
-    connection.autocommit(False)
-    return connection
-
-
-def ensure_database():
-    with closing(open_connection(use_database=False)) as conn:
-        with closing(conn.cursor()) as cur:
-            cur.execute(
-                f"CREATE DATABASE IF NOT EXISTS `{MYSQL_CONFIG['db']}` "
-                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-            )
-        conn.commit()
-
-
-def ensure_schema():
-    with closing(open_connection()) as conn:
-        with closing(conn.cursor()) as cur:
-            cur.execute(
-                """
-                CREATE TABLE IF NOT EXISTS usuario (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    nombre VARCHAR(120) NOT NULL UNIQUE,
-                    contrasenia VARCHAR(255) NOT NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-                """
-            )
-            cur.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tareas (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    nombreTarea VARCHAR(255) NOT NULL,
-                    descripcion TEXT NOT NULL,
-                    prioridad ENUM('urgente', 'importante', 'deseable') NOT NULL,
-                    fechaLimite DATE NULL,
-                    usuario_id INT NOT NULL,
-                    CONSTRAINT fk_tareas_usuario
-                        FOREIGN KEY (usuario_id) REFERENCES usuario(id)
-                        ON DELETE CASCADE,
-                    CONSTRAINT uq_tarea_usuario UNIQUE (nombreTarea, usuario_id)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-                """
-            )
-            cur.execute(
-                """
-                ALTER TABLE usuario
-                MODIFY nombre VARCHAR(120) NOT NULL,
-                MODIFY contrasenia VARCHAR(255) NOT NULL
-                """
-            )
-            cur.execute(
-                """
-                ALTER TABLE tareas
-                MODIFY nombreTarea VARCHAR(255) NOT NULL,
-                MODIFY descripcion TEXT NOT NULL,
-                MODIFY fechaLimite DATE NULL
-                """
-            )
-            cur.execute("SELECT id FROM usuario WHERE nombre = %s", (DEFAULT_USERNAME,))
-            if cur.fetchone() is None:
-                cur.execute(
-                    "INSERT INTO usuario (nombre, contrasenia) VALUES (%s, %s)",
-                    (DEFAULT_USERNAME, generate_password_hash(DEFAULT_PASSWORD)),
-                )
-        conn.commit()
-
-
-def init_db():
-    ensure_database()
-    ensure_schema()
 
 
 def get_user_by_username(cursor, username):
@@ -203,13 +83,19 @@ def verify_password(password, stored_password):
 
 
 try:
-    init_db()
+    initialize_database(DEFAULT_USERNAME, DEFAULT_PASSWORD)
 except Exception as exc:
-    raise RuntimeError(
-        "No se pudo inicializar MySQL. Verifica que el servidor este levantado "
-        f"y revisa MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD y MYSQL_DB. "
-        f"Configuracion actual: {MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['db']}"
-    ) from exc
+    raise RuntimeError(str(exc) or f"No se pudo inicializar MySQL: {get_database_target()}") from exc
+
+
+@app.get("/health/db")
+def health_db():
+    try:
+        ping_database()
+    except Exception as exc:
+        return jsonify(status="error", target=get_database_target(), message=str(exc)), 503
+
+    return jsonify(status="ok", target=get_database_target()), 200
 
 
 @app.post("/login")
@@ -435,19 +321,28 @@ def eliminar_tarea():
     return jsonify(message="Tarea eliminada."), 200
 
 
-@app.get("/")
-def serve_index():
+def serve_frontend_index():
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if not os.path.isfile(index_path):
+        abort(503, description="El frontend React no esta construido.")
+
     return send_from_directory(STATIC_DIR, "index.html")
 
 
-@app.get("/admin.html")
-def serve_admin():
-    return send_from_directory(STATIC_DIR, "admin.html")
+@app.get("/", defaults={"requested_path": ""})
+@app.get("/<path:requested_path>")
+def serve_frontend(requested_path):
+    if requested_path in {"", "admin.html"}:
+        return serve_frontend_index()
 
+    file_path = os.path.join(STATIC_DIR, requested_path)
+    if requested_path and os.path.isfile(file_path):
+        return send_from_directory(STATIC_DIR, requested_path)
 
-@app.get("/static/<path:filename>")
-def serve_static(filename):
-    return send_from_directory(STATIC_DIR, filename)
+    if "." in os.path.basename(requested_path):
+        abort(404)
+
+    return serve_frontend_index()
 
 
 if __name__ == "__main__":

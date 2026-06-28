@@ -1,4 +1,6 @@
 .venv/
+frontend/node_modules/
+.pnpm-store/
 __pycache__/
 *.pyc
 *.pyo

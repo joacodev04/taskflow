@@ -6,8 +6,9 @@ USE `Tareas`;
 
 CREATE TABLE IF NOT EXISTS `usuario` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `nombre` VARCHAR(120) NOT NULL UNIQUE,
-    `contrasenia` VARCHAR(255) NOT NULL
+    `nombre` VARCHAR(120) NOT NULL,
+    `contrasenia` VARCHAR(255) NOT NULL,
+    UNIQUE KEY `uq_usuario_nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `tareas` (
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `tareas` (
     `prioridad` ENUM('urgente', 'importante', 'deseable') NOT NULL,
     `fechaLimite` DATE NULL,
     `usuario_id` INT NOT NULL,
+    KEY `idx_tareas_usuario_id` (`usuario_id`),
     CONSTRAINT `fk_tareas_usuario`
         FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`)
         ON DELETE CASCADE,

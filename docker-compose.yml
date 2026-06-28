@@ -4,6 +4,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql_tareas
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: Tareas
@@ -13,10 +14,16 @@ services:
       - "3307:3306"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   app:
     build: .
     container_name: app_tareas
+    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
@@ -25,5 +32,7 @@ services:
       MYSQL_USER: usuario
       MYSQL_PASSWORD: password
       MYSQL_DB: Tareas
+      MYSQL_INIT_MAX_ATTEMPTS: 30
+      MYSQL_INIT_RETRY_SECONDS: 2
     depends_on:
       - mysql
